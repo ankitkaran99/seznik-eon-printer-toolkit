@@ -265,9 +265,6 @@ async def main(argv: list[str] | None = None) -> int:
     print(f"  Scan time : {args.scan_time}s")
     print(f"  GATT probe: {'disabled' if args.no_probe else 'enabled'}")
 
-    if platform.system() != "Windows":
-        fail("This toolkit supports Windows only.")
-        return 1
     if args.scan_time <= 0:
         fail("Scan time must be greater than 0.")
         return 1

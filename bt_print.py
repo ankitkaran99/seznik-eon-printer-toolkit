@@ -499,8 +499,6 @@ def image_file_to_escpos(path: str) -> bytes:
 # ── EMF / GDI ─────────────────────────────────────────────────────────────────
 
 def emf_to_escpos(data: bytes):
-    if platform.system() != "Windows":
-        return None
 
     tmp_path = None
     tmp_emf = None
@@ -1270,10 +1268,6 @@ async def main(argv: list[str] | None = None) -> int:
     print(f"  Platform : {platform.system()} {platform.release()}")
     print(f"  Python   : {sys.version.split()[0]}")
     print(f"  Config   : {CONFIG_FILE}")
-
-    if platform.system() != "Windows":
-        fail("This toolkit supports Windows only.")
-        return 1
 
     if not BLEAK_AVAILABLE:
         fail("'bleak' not installed. Run:  pip install bleak")
