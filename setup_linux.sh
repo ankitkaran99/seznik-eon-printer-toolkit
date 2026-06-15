@@ -69,22 +69,6 @@ install_python_deps() {
     ok "Python packages installed"
 }
 
-patch_windows_checks() {
-    header "Patching Windows-only guards"
-    local py="${TOOLKIT_DIR}/.venv/bin/python"
-
-    for script in bt_scan.py bt_print.py; do
-        local f="${TOOLKIT_DIR}/${script}"
-        [[ -f "$f" ]] || { warn "$script not found, skipping"; continue; }
-
-        # Remove lines that bail on non-Windows (handles both 1-line and 2-line patterns)
-        sed -i '/platform\.system() != ["\x27]Windows["\x27]/,/Windows only/d' "$f"
-        # Also remove single-line variants
-        sed -i '/if platform\.system() != ["\x27]Windows["\x27]:/d' "$f"
-
-        ok "$script patched"
-    done
-}
 
 fix_bluez_le_transport() {
     header "Configuring BlueZ for LE-only transport"
@@ -363,7 +347,6 @@ main() {
 
     install_system_deps
     install_python_deps
-    patch_windows_checks
     fix_bluez_le_transport
     create_bluez_le_fix_script
     scan_and_save_config
