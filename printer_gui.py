@@ -309,8 +309,6 @@ class PrinterGui:
 
 
 def main() -> None:
-    if platform.system() != "Windows":
-        raise SystemExit("Seznik EON Printer Toolkit supports Windows only.")
     root = tk.Tk()
     gui = PrinterGui(root)
     root.mainloop()

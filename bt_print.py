@@ -1156,6 +1156,7 @@ async def send_direct_ble(payload: bytes, cfg: dict) -> bool:
 
     async def _send_once(response_mode: bool):
         async with BleakClient(address, timeout=15) as client:
+            _ = client.mtu_size  # Ensure MTU is acquired to avoid Bleak UserWarning
             for i in range(0, len(payload), chunk):
                 await client.write_gatt_char(
                     write_uuid, payload[i:i+chunk], response=response_mode)

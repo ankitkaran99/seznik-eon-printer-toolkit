@@ -336,6 +336,50 @@ FIXEOF
 }
 
 # ── main ──────────────────────────────────────────────────────────────────────
+create_desktop_shortcut() {
+    header "Installing Desktop Application Entry & Icon"
+
+    local icon_dir="/usr/share/icons/hicolor/scalable/apps"
+    mkdir -p "$icon_dir"
+    if [[ -f "${TOOLKIT_DIR}/logo.png" ]]; then
+        cp "${TOOLKIT_DIR}/logo.png" "${icon_dir}/seznik-eon-printer.png"
+        ok "Icon installed to ${icon_dir}/seznik-eon-printer.png"
+    fi
+
+    local app_dir="/usr/share/applications"
+    mkdir -p "$app_dir"
+
+    local desktop_file="${app_dir}/seznik-eon-printer.desktop"
+    cat > "$desktop_file" << EOF
+[Desktop Entry]
+Type=Application
+Name=Seznik EON Printer Toolkit
+Comment=Launch Seznik EON Printer GUI
+Exec=${TOOLKIT_DIR}/.venv/bin/python ${TOOLKIT_DIR}/printer_gui.py
+Icon=${TOOLKIT_DIR}/logo.png
+Path=${TOOLKIT_DIR}
+Terminal=false
+Categories=Utility;Printing;
+EOF
+
+    chmod +x "$desktop_file" 2>/dev/null || chmod 644 "$desktop_file"
+    ok "Desktop application entry created: ${desktop_file}"
+
+    # Also install desktop shortcut to target user's Desktop directory if available
+    local user="${SUDO_USER:-$USER}"
+    local user_home
+    user_home=$(eval echo "~${user}")
+    local user_desktop="${user_home}/Desktop"
+
+    if [[ -d "$user_desktop" ]]; then
+        local user_desktop_file="${user_desktop}/seznik-eon-printer.desktop"
+        cp "$desktop_file" "$user_desktop_file"
+        chown "${user}:" "$user_desktop_file" 2>/dev/null || true
+        chmod +x "$user_desktop_file"
+        ok "Desktop shortcut created: ${user_desktop_file}"
+    fi
+}
+
 main() {
     echo -e "${BOLD}"
     echo "  ╔══════════════════════════════════════════════╗"
@@ -353,6 +397,7 @@ main() {
     install_relay_service
     install_cups_printer
     create_cli_wrapper
+    create_desktop_shortcut
     print_summary
 }
 

@@ -336,6 +336,7 @@ async def probe_printer(device):
 
     try:
         async with BleakClient(addr, timeout=15) as client:
+            _ = client.mtu_size  # Access mtu_size to trigger MTU acquisition in Bleak 3.0+
             probe["connected"] = True
             probe["mtu"]       = client.mtu_size
             ok(f"Connected!   MTU: {client.mtu_size} bytes\n")
